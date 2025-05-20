@@ -24,8 +24,8 @@ int main(int argc, char **argv)
     // that we need to do regardles of communication successs.
 
     // ▶️ wait on both requests to complete
-    MPI_Wait(&req_recv, &status);
-    MPI_Wait(&req_send, &status);
+    // MPI_Wait(&req_recv, &status);
+    // MPI_Wait(&req_send, MPI_STATUS_IGNORE);
 
     printf("Rank %d done non-blocking exchange.\n", rank);
     MPI_Finalize();
