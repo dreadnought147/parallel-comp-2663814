@@ -57,3 +57,5 @@ int main(int argc, char **argv)
     MPI_Finalize();
     return 0;
 }
+/// here we have a 8 by 8  we split it accordign to its size to 4 proxess, each procer does the matrix multpication with a x thats bcasted to all processers
+// at each pro we have a ylocal that computes the result of the mult at each pro, then that ylocal is gathered into a big y,
