@@ -36,7 +36,6 @@ void bitonic_sort_mpi(int *local, int count, int rank, int num_procs)
         {
             int peer = rank ^ j;
             int direction = ((rank & k) == 0) ? 1 : 0;
-
             int *recv_buf = malloc(count * sizeof(int));
             MPI_Sendrecv(local, count, MPI_INT, peer, 0,
                          recv_buf, count, MPI_INT, peer, 0,
@@ -64,7 +63,9 @@ void bitonic_sort_mpi(int *local, int count, int rank, int num_procs)
 
 int main(int argc, char **argv)
 {
-    int rank, num_procs, total_n = 1 << 12;
+    int rank, num_procs;
+    int total_n = (argc > 1) ? atoi(argv[1]) : (1 << 12);
+
     int *full_data = NULL, *sorted_data = NULL;
 
     MPI_Init(&argc, &argv);
@@ -120,7 +121,9 @@ int main(int argc, char **argv)
         printf("MPI Bitonic Sort SORTED: %s\n", is_sorted ? "YES" : "NO");
         printf("QuickSort Time: %.6f s\n", quick_end - quick_start);
         printf("Bitonic Sort Time (MPI): %.6f s\n", bitonic_end - bitonic_start);
-        printf("Speedup: %.2f\n", (quick_end - quick_start) / (bitonic_end - bitonic_start));
+        printf("Speedup: %.6f\n", (quick_end - quick_start) / (bitonic_end - bitonic_start));
+        // printf("array size: %d\n", total_n); used to check if mpi was sorting those dynamically sized arrays
+
         printf("------------------------------------------------------------------\n");
     }
 

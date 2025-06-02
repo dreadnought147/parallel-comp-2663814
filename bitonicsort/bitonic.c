@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-void compare(int *arr, int i, int j, int dir)
+void compare(int *arr, int i, int j, int direction)
 {
-    if (dir == (arr[i] > arr[j]))
+    if (direction == (arr[i] > arr[j]))
     {
         int temp = arr[i];
         arr[i] = arr[j];
@@ -12,28 +12,28 @@ void compare(int *arr, int i, int j, int dir)
     }
 }
 
-void bitonic_merge(int *arr, int low, int cnt, int dir)
+void bitonic_merge(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
         int k = cnt / 2;
         for (int i = low; i < low + k; i++)
         {
-            compare(arr, i, i + k, dir);
+            compare(arr, i, i + k, direction);
         }
-        bitonic_merge(arr, low, k, dir);
-        bitonic_merge(arr, low + k, k, dir);
+        bitonic_merge(arr, low, k, direction);
+        bitonic_merge(arr, low + k, k, direction);
     }
 }
 
-void bitonic_sort(int *arr, int low, int cnt, int dir)
+void bitonic_sort(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
         int k = cnt / 2;
         bitonic_sort(arr, low, k, 1);
         bitonic_sort(arr, low + k, k, 0);
-        bitonic_merge(arr, low, cnt, dir);
+        bitonic_merge(arr, low, cnt, direction);
     }
 }
 
@@ -50,14 +50,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int n = atoi(argv[1]);
+    int n = atoi(argv[1]); // "user" input from make
     if (!is_power_of_two(n))
     {
         printf("Error: array size must be a power of 2.\n");
         return 1;
     }
 
-    // Static test array
+    // Static test array just to validate our workingness, does the algorith sort
     int test[16] = {3, 7, 4, 8, 6, 2, 1, 5, 9, 0, 11, 13, 12, 15, 14, 10};
     printf("Static Test Array (Unsorted):\n");
     for (int i = 0; i < 16; i++)
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
         printf("%d ", test[i]);
     printf("\n");
 
-    // Dynamic large array for performance test
+    // the large array for performance test
     int *arr = malloc(n * sizeof(int));
     if (!arr)
     {
@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
     }
 
     srand(time(NULL));
+    // populate it
     for (int i = 0; i < n; i++)
     {
         arr[i] = rand() % 100000;

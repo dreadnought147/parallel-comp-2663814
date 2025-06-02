@@ -4,9 +4,9 @@
 #include <time.h>
 #include <string.h>
 
-void compare(int *arr, int i, int j, int dir)
+void compare(int *arr, int i, int j, int direction)
 {
-    if (dir == (arr[i] > arr[j]))
+    if (direction == (arr[i] > arr[j]))
     {
         int temp = arr[i];
         arr[i] = arr[j];
@@ -16,32 +16,32 @@ void compare(int *arr, int i, int j, int dir)
 
 // Example usage instead of bitonic_sort_serial:
 
-void bitonic_merge_serial(int *arr, int low, int cnt, int dir)
+void bitonic_merge_serial(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
         int k = cnt / 2;
         for (int i = low; i < low + k; i++)
         {
-            compare(arr, i, i + k, dir);
+            compare(arr, i, i + k, direction);
         }
-        bitonic_merge_serial(arr, low, k, dir);
-        bitonic_merge_serial(arr, low + k, k, dir);
+        bitonic_merge_serial(arr, low, k, direction);
+        bitonic_merge_serial(arr, low + k, k, direction);
     }
 }
 
-void bitonic_sort_serial(int *arr, int low, int cnt, int dir)
+void bitonic_sort_serial(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
         int k = cnt / 2;
         bitonic_sort_serial(arr, low, k, 1);
         bitonic_sort_serial(arr, low + k, k, 0);
-        bitonic_merge_serial(arr, low, cnt, dir);
+        bitonic_merge_serial(arr, low, cnt, direction);
     }
 }
 
-void bitonic_merge_parallel(int *arr, int low, int cnt, int dir)
+void bitonic_merge_parallel(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
@@ -49,14 +49,14 @@ void bitonic_merge_parallel(int *arr, int low, int cnt, int dir)
 #pragma omp parallel for
         for (int i = low; i < low + k; i++)
         {
-            compare(arr, i, i + k, dir);
+            compare(arr, i, i + k, direction);
         }
-        bitonic_merge_parallel(arr, low, k, dir);
-        bitonic_merge_parallel(arr, low + k, k, dir);
+        bitonic_merge_parallel(arr, low, k, direction);
+        bitonic_merge_parallel(arr, low + k, k, direction);
     }
 }
 
-void bitonic_sort_parallel(int *arr, int low, int cnt, int dir)
+void bitonic_sort_parallel(int *arr, int low, int cnt, int direction)
 {
     if (cnt > 1)
     {
@@ -68,7 +68,7 @@ void bitonic_sort_parallel(int *arr, int low, int cnt, int dir)
 #pragma omp section
             bitonic_sort_parallel(arr, low + k, k, 0);
         }
-        bitonic_merge_parallel(arr, low, cnt, dir);
+        bitonic_merge_parallel(arr, low, cnt, direction);
     }
 }
 
@@ -79,7 +79,7 @@ int compare_ints(const void *a, const void *b)
     return (arg1 > arg2) - (arg1 < arg2);
 }
 
-int validate(int *a, int *b, int n)
+int check(int *a, int *b, int n)
 {
     for (int i = 0; i < n; i++)
     {
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     bitonic_sort_serial(arr_serial, 0, n, 1);
     double end_serial = omp_get_wtime();
 
-    int valid_serial = validate(arr_serial, arr_qs, n);
+    int valid_serial = check(arr_serial, arr_qs, n);
 
     int threads[] = {2, 4, 8};
     printf("------------------------------------------------------------------\n");
@@ -141,10 +141,10 @@ int main(int argc, char *argv[])
     double start_par = omp_get_wtime();
     bitonic_sort_parallel(arr_parallel, 0, n, 1);
     double end_par = omp_get_wtime();
-    int valid_par = validate(arr_parallel, arr_qs, n);
+    int valid = check(arr_parallel, arr_qs, n);
     double speedup = (end_qs - start_qs) / (end_par - start_par);
 
-    printf("OpenMP Bitonic Sorted: %s\n", valid_par ? "YES" : "NO");
+    printf("OpenMP Bitonic implem Sorted: %s  \n", valid ? "YES" : "NO");
     // printf("Threads: %d\n", threads[i]);
     printf("OpenMP Time: %.6f s\n", end_par - start_par);
     printf("Speedup: %.2f\n", speedup);
